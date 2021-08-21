@@ -1,8 +1,22 @@
 import requests
 from bs4 import BeautifulSoup
 
-res = requests.get("http://quotes.toscrape.com")
-soup = BeautifulSoup(res.text)
+all_quotes =[]
+base_url = "http://quotes.toscrape.com"
+url = "/page/1"
+
+
+
+res = requests.get(f"{base_url}{url}")
+soup = BeautifulSoup(res.text, 'html.parser')
 quotes = soup.find_all(class_="quote")
 for quote in quotes:
-    print(quote.find(class_="text").get_text())
+    all_quotes.append({
+        "text" : quote.find(class_="text").get_text(),
+        "author" : quote.find(class_="author").get_text(),
+        "bio-link" :quote.find("a")["href"] 
+    })
+next_button = soup.find(class_="next")
+print(next_button.find('a')['href'])
+
+# print(all_quotes)
