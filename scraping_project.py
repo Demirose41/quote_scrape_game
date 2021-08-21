@@ -1,9 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
+from time import sleep
+from random import choice
 
 all_quotes =[]
 base_url = "http://quotes.toscrape.com"
 url = "/page/1"
+game = True
 
 while url:
     res = requests.get(f"{base_url}{url}")
@@ -19,5 +22,33 @@ while url:
         })
     next_button = soup.find(class_="next")
     url = next_button.find('a')['href'] if next_button else None 
+    #sleep(2) 
 
-print(all_quotes)
+# print(all_quotes)
+
+quote = choice(all_quotes)
+remaining_guesses = 4
+print("Here's a quote: ")
+print(quote["text"])
+print(quote["author"])
+guess =''
+while guess.lower() != quote["author"].lower():
+    guess = input(f"Who said this quote? Guesses remaining: {remaining_guesses - 1}\n")
+    remaining_guesses -= 1
+    if guess.lower() == quote["author"].lower():
+        print("You Win, now I die...")  
+        break
+    elif remaining_guesses == 3:
+        res = requests.get(f"{base_url}{quote['bio-link']}")
+        soup = BeautifulSoup(res.text, 'html.parser')
+        birth_date = soup.find(class_="author-born-date").get_text()
+        birth_place = soup.find(class_="author-born-location").get_text()
+        print(f"Here's a hint kiddo! The author was born on {birth_date} {birth_place}")
+    elif remaining_guesses == 2:
+        print(f"Here's another friend... The author's first name starts with {quote['author'][0]}")
+    elif remaining_guesses == 1:
+        last_initial = quote["author"].split(" ")[1][0]
+        print(f"Last hint oooooooooh... The author's last name starts with {last_initial}")
+    else:
+        print("you lose")
+        guess = quote["author"]
