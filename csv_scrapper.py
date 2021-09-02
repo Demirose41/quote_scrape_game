@@ -24,15 +24,16 @@ def scrape_quotes():
         next_button = soup.find(class_="next")
         url = next_button.find('a')['href'] if next_button else None 
         sleep(2) 
+    with open("quotes.csv", "w") as file:
+        headers = ["text", "author","bio-link"]
+        csv_writer = DictWriter(file, fieldnames=headers)
+        csv_writer.writeheader()
+        for quote in all_quotes:
+            csv_writer.writerow(quote)
+    
     return all_quotes
 
-quotes = scrape_quotes()
+
 #write quotes to csv file
 
-with open("quotes.csv", "w") as file:
-    headers = ["text", "author","bio-link"]
-    csv_writer = DictWriter(file, fieldnames=headers)
-    csv_writer.writeheader()
-    for quote in quotes:
-        csv_writer.writerow(quote)
     

@@ -1,8 +1,27 @@
-from csv_scrapper import scrape_quotes
+import os.path
+from os import path
 import requests
 from bs4 import BeautifulSoup
 from time import sleep
 from random import choice
+from csv import DictReader
+from csv_scrapper import scrape_quotes
+
+
+base_url = "http://quotes.toscrape.com"
+
+def read_quotes(filename):
+    with open(filename, "r") as file:
+        csv_reader = DictReader(file)
+        return list(csv_reader)
+            
+
+def csv_check(filename):
+    if path.exists(filename) :
+        start_game(read_quotes(filename))
+    else:
+        start_game(scrape_quotes())
+
 
 def start_game(quotes):
     quote = choice(quotes)
@@ -42,4 +61,4 @@ def start_game(quotes):
         print("okay bye..")
 
 
-start_game(scrape_quotes())
+csv_check("quotes.csv")
