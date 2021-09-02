@@ -1,32 +1,7 @@
-import requests
-from bs4 import BeautifulSoup
-from time import sleep
-from random import choice
+from csv_scrapper import scrape_quotes
 
-all_quotes =[]
-base_url = "http://quotes.toscrape.com"
-url = "/page/1"
-game = True
-
-while url:
-    res = requests.get(f"{base_url}{url}")
-    print(f"Now Scrapping... {base_url}{url}.......")
-    soup = BeautifulSoup(res.text, 'html.parser')
-    quotes = soup.find_all(class_="quote")
-
-    for quote in quotes:
-        all_quotes.append({
-            "text" : quote.find(class_="text").get_text(),
-            "author" : quote.find(class_="author").get_text(),
-            "bio-link" :quote.find("a")["href"] 
-        })
-    next_button = soup.find(class_="next")
-    url = next_button.find('a')['href'] if next_button else None 
-    #sleep(2) 
-
-# print(all_quotes)
-def start_game():
-    quote = choice(all_quotes)
+def start_game(quotes):
+    quote = choice(quotes)
     remaining_guesses = 4
     print("Here's a quote: ")
     print(quote["text"])
@@ -58,8 +33,9 @@ def start_game():
         again = input("Would you like to play again (y/n)?:\n")
     if again.lower() in ('yes','y'):
         print('lets play again')
-        return start_game()
+        return start_game(quotes)
     else:
         print("okay bye..")
 
-start_game()
+
+start_game(scrape_quotes())
